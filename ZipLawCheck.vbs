@@ -6,41 +6,31 @@ Sub CheckZipfsLaw(filePath, intUserSpecifiedNum)
     Dim i, intTotalWords, normalizedWord
     Dim arrKeys, arrItems
     Dim wordForms
+	Dim regex
 
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     Set objTextFile = objFSO.OpenTextFile(filePath, 1)
 
-    strText = objTextFile.ReadAll
+    strText = LCase(objTextFile.ReadAll)
     objTextFile.Close
+	
+	strText = Replace(Replace(strText, Chr(13), " "), Chr(10), " ")
+	Set regex = New RegExp
+	regex.Pattern = "[^a-zA-Z\s']"
+	regex.Global = True
+	strText = regex.Replace(strText, "")
 
     Set wordForms = CreateObject("Scripting.Dictionary")
-    wordForms.Add "the", Array("The")
-    wordForms.Add "be", Array("Be", "is", "Is", "are", "Are", "am", "Am", "was", "Was", "were", "Were")
-    wordForms.Add "to", Array("To")
-    wordForms.Add "of", Array("Of")
-    wordForms.Add "and", Array("And")
-    wordForms.Add "a", Array("A", "an", "An")
-    wordForms.Add "in", Array("In")
-    wordForms.Add "that", Array("That")
-    wordForms.Add "have", Array("Have", "has", "Has", "had", "Had")
-    wordForms.Add "i", Array("I")
-    wordForms.Add "it", Array("It", "its", "Its")
-    wordForms.Add "for", Array("For")
-    wordForms.Add "not", Array("Not")
-    wordForms.Add "on", Array("On")
-    wordForms.Add "with", Array("With")
-    wordForms.Add "as", Array("As")
-    wordForms.Add "you", Array("You", "your", "Your")
-    wordForms.Add "do", Array("Do", "does", "Does", "did", "Did")
-    wordForms.Add "at", Array("At")
-    wordForms.Add "this", Array("This")
-    wordForms.Add "but", Array("But")
-    wordForms.Add "by", Array("By")
-    wordForms.Add "from", Array("From")
-    wordForms.Add "they", Array("They", "their", "Their")
-    wordForms.Add "we", Array("We", "our", "Our")
-    wordForms.Add "say", Array("Say", "says", "Says", "said", "Said")
-    wordForms.Add "or", Array("Or")
+    wordForms.Add "be", Array("is", "are", "am", "was", "were")
+    wordForms.Add "a", Array("an")
+    wordForms.Add "have", Array("has", "had")
+    wordForms.Add "it", Array("its")
+    wordForms.Add "not", Array("don't")
+    wordForms.Add "you", Array("your")
+    wordForms.Add "do", Array("does", "did")
+    wordForms.Add "they", Array("their")
+    wordForms.Add "we", Array("our")
+    wordForms.Add "say", Array("says", "said")
 
     arrWords = Split(strText)
 
