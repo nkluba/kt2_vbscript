@@ -2,7 +2,7 @@ Option Explicit
 
 Sub CheckZipfsLaw(filePath, intUserSpecifiedNum)
     Dim objFSO, objTextFile
-    Dim strText, arrWords, word, dict
+    Dim strText, arrWords, word, dict, dictApostrophe
     Dim i, intTotalWords, normalizedWord
     Dim arrKeys, arrItems
     Dim wordForms
@@ -22,6 +22,7 @@ Sub CheckZipfsLaw(filePath, intUserSpecifiedNum)
 
     Set wordForms = CreateObject("Scripting.Dictionary")
     wordForms.Add "be", Array("is", "are", "am", "was", "were")
+	wordForms.Add "he", Array("him", "his")
     wordForms.Add "a", Array("an")
     wordForms.Add "have", Array("has", "had")
     wordForms.Add "it", Array("its")
@@ -45,25 +46,43 @@ Sub CheckZipfsLaw(filePath, intUserSpecifiedNum)
     Next
 
     Set dict = CreateObject("Scripting.Dictionary")
+	Set dictApostrophe = CreateObject("Scripting.Dictionary")
 
-    For Each word In arrWords
-        If dict.Exists(word) Then
-            dict.Item(word) = dict.Item(word) + 1
-        Else
-            dict.Add word, 1
-        End If
-    Next
+	For Each word In arrWords
+		If word <> "" Then
+			If InStr(word, "'") > 0 Then
+				If dictApostrophe.Exists(word) Then
+					dictApostrophe.Item(word) = dictApostrophe.Item(word) + 1
+				Else
+					dictApostrophe.Add word, 1
+				End If
+			Else
+				If dict.Exists(word) Then
+					dict.Item(word) = dict.Item(word) + 1
+				Else
+					dict.Add word, 1
+				End If
+			End If
+		End If
+	Next
 
     intTotalWords = UBound(arrWords) + 1
 
-    arrKeys = dict.Keys
-    arrItems = dict.Items
+    WScript.Echo "The most popular words in " & filePath & " are: \n"
+	arrKeys = dict.Keys
+	arrItems = dict.Items
+	Call BubbleSort(arrKeys, arrItems)
+	For i = 0 To intUserSpecifiedNum - 1
+		WScript.Echo arrKeys(i) & " " & arrItems(i) & " " & intTotalWords / (i + 1)
+	Next
 
-    Call BubbleSort(arrKeys, arrItems)
-
-    For i = 0 To intUserSpecifiedNum - 1
-        WScript.Echo "Word: " & arrKeys(i) & ", Actual Occurrences: " & arrItems(i) & ", Predicted Occurrences: " & intTotalWords / (i + 1)
-    Next
+	WScript.Echo "\nThe most popular still remaining short forms in " & filePath & " are: \n"
+	arrKeys = dictApostrophe.Keys
+	arrItems = dictApostrophe.Items
+	Call BubbleSort(arrKeys, arrItems)
+	For i = 0 To intUserSpecifiedNum - 1
+		WScript.Echo arrKeys(i) & " " & arrItems(i) & " " & intTotalWords / (i + 1)
+	Next
 End Sub
 
 Sub BubbleSort(arr1, arr2)
