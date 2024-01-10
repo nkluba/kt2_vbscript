@@ -1,82 +1,80 @@
 Option Explicit
 
-Dim objFSO, objTextFile
-Dim strText, arrWords, word, dict
-Dim wordForms, normalizedWord
-Dim i, intUserSpecifiedNum, intTotalWords
-Dim arrKeys, arrItems
+Sub CheckZipfsLaw(filePath, intUserSpecifiedNum)
+    Dim objFSO, objTextFile
+    Dim strText, arrWords, word, dict
+    Dim i, intTotalWords
+    Dim arrKeys, arrItems
+    Dim wordForms
 
-Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objTextFile = objFSO.OpenTextFile(filePath, 1)
 
-Set objTextFile = objFSO.OpenTextFile("C:\Users\luban\Downloads\sample.txt", 1)
+    strText = objTextFile.ReadAll
+    objTextFile.Close
 
-strText = objTextFile.ReadAll
+    Set wordForms = CreateObject("Scripting.Dictionary")
+    wordForms.Add "the", Array("The")
+    wordForms.Add "be", Array("Be", "is", "Is", "are", "Are", "am", "Am", "was", "Was", "were", "Were")
+    wordForms.Add "to", Array("To")
+    wordForms.Add "of", Array("Of")
+    wordForms.Add "and", Array("And")
+    wordForms.Add "a", Array("A", "an", "An")
+    wordForms.Add "in", Array("In")
+    wordForms.Add "that", Array("That")
+    wordForms.Add "have", Array("Have", "has", "Has", "had", "Had")
+    wordForms.Add "i", Array("I")
+    wordForms.Add "it", Array("It", "its", "Its")
+    wordForms.Add "for", Array("For")
+    wordForms.Add "not", Array("Not")
+    wordForms.Add "on", Array("On")
+    wordForms.Add "with", Array("With")
+    wordForms.Add "as", Array("As")
+    wordForms.Add "you", Array("You", "your", "Your")
+    wordForms.Add "do", Array("Do", "does", "Does", "did", "Did")
+    wordForms.Add "at", Array("At")
+    wordForms.Add "this", Array("This")
+    wordForms.Add "but", Array("But")
+    wordForms.Add "by", Array("By")
+    wordForms.Add "from", Array("From")
+    wordForms.Add "they", Array("They", "their", "Their")
+    wordForms.Add "we", Array("We", "our", "Our")
+    wordForms.Add "say", Array("Say", "says", "Says", "said", "Said")
+    wordForms.Add "or", Array("Or")
 
-objTextFile.Close
+    arrWords = Split(strText)
 
-Set wordForms = CreateObject("Scripting.Dictionary")
-wordForms.Add "the", Array("The")
-wordForms.Add "be", Array("Be", "is", "Is", "are", "Are", "am", "Am", "was", "Was", "were", "Were")
-wordForms.Add "to", Array("To")
-wordForms.Add "of", Array("Of")
-wordForms.Add "and", Array("And")
-wordForms.Add "a", Array("A", "an", "An")
-wordForms.Add "in", Array("In")
-wordForms.Add "that", Array("That")
-wordForms.Add "have", Array("Have", "has", "Has", "had", "Had")
-wordForms.Add "i", Array("I")
-wordForms.Add "it", Array("It", "its", "Its")
-wordForms.Add "for", Array("For")
-wordForms.Add "not", Array("Not")
-wordForms.Add "on", Array("On")
-wordForms.Add "with", Array("With")
-wordForms.Add "as", Array("As")
-wordForms.Add "you", Array("You", "your", "Your")
-wordForms.Add "do", Array("Do", "does", "Does", "did", "Did")
-wordForms.Add "at", Array("At")
-wordForms.Add "this", Array("This")
-wordForms.Add "but", Array("But")
-wordForms.Add "by", Array("By")
-wordForms.Add "from", Array("From")
-wordForms.Add "they", Array("They", "their", "Their")
-wordForms.Add "we", Array("We", "our", "Our")
-wordForms.Add "say", Array("Say", "says", "Says", "said", "Said")
-wordForms.Add "or", Array("Or")
-
-arrWords = Split(strText)
-
-For i = 0 To UBound(arrWords)
-    For Each word In wordForms.Keys
-        For Each normalizedWord In wordForms.Item(word)
-            If arrWords(i) = normalizedWord Then
-                arrWords(i) = word
-            End If
+    For i = 0 To UBound(arrWords)
+        For Each word In wordForms.Keys
+            For Each normalizedWord In wordForms.Item(word)
+                If arrWords(i) = normalizedWord Then
+                    arrWords(i) = word
+                End If
+            Next
         Next
     Next
-Next
 
-Set dict = CreateObject("Scripting.Dictionary")
+    Set dict = CreateObject("Scripting.Dictionary")
 
-For Each word In arrWords
-    If dict.Exists(word) Then
-        dict.Item(word) = dict.Item(word) + 1
-    Else
-        dict.Add word, 1
-    End If
-Next
+    For Each word In arrWords
+        If dict.Exists(word) Then
+            dict.Item(word) = dict.Item(word) + 1
+        Else
+            dict.Add word, 1
+        End If
+    Next
 
-intTotalWords = UBound(arrWords) + 1
+    intTotalWords = UBound(arrWords) + 1
 
-intUserSpecifiedNum = 10
+    arrKeys = dict.Keys
+    arrItems = dict.Items
 
-arrKeys = dict.Keys
-arrItems = dict.Items
+    Call BubbleSort(arrKeys, arrItems)
 
-Call BubbleSort(arrKeys, arrItems)
-
-For i = 0 To intUserSpecifiedNum - 1
-    WScript.Echo "Word: " & arrKeys(i) & ", Actual Occurrences: " & arrItems(i) & ", Predicted Occurrences: " & intTotalWords / (i + 1)
-Next
+    For i = 0 To intUserSpecifiedNum - 1
+        WScript.Echo "Word: " & arrKeys(i) & ", Actual Occurrences: " & arrItems(i) & ", Predicted Occurrences: " & intTotalWords / (i + 1)
+    Next
+End Sub
 
 Sub BubbleSort(arr1, arr2)
     Dim i, j, temp1, temp2
@@ -93,3 +91,13 @@ Sub BubbleSort(arr1, arr2)
         Next
     Next
 End Sub
+
+Dim filePath, intUserSpecifiedNum
+
+If WScript.Arguments.Count >= 2 Then
+    filePath = WScript.Arguments(0)
+    intUserSpecifiedNum = WScript.Arguments(1)
+    Call CheckZipfsLaw(filePath, intUserSpecifiedNum)
+Else
+    WScript.Echo "Please provide a file path and a number as arguments."
+End If
