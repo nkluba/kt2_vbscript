@@ -3,7 +3,7 @@ Option Explicit
 Sub CheckZipfsLaw(filePath, intUserSpecifiedNum)
     Dim objFSO, objTextFile
     Dim strText, arrWords, word, dict
-    Dim i, intTotalWords
+    Dim i, intTotalWords, normalizedWord
     Dim arrKeys, arrItems
     Dim wordForms
 
