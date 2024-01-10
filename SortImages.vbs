@@ -5,9 +5,6 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 Set dict = CreateObject("Scripting.Dictionary")
 folderCount = 0
 
-'startFolder = "C:\Users\luban\Pictures\Screenshots"
-'targetFolder = "C:\Users\luban\Pictures\Sorted"
-
 startFolder = WScript.Arguments(0)
 targetFolder = WScript.Arguments(1)
 
