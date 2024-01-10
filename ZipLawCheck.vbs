@@ -68,7 +68,7 @@ Sub CheckZipfsLaw(filePath, intUserSpecifiedNum)
 
     intTotalWords = UBound(arrWords) + 1
 
-    WScript.Echo "The most popular words in " & filePath & " are: \n"
+    WScript.Echo "The most popular words in " & filePath & " are: " & vbCrLf
 	arrKeys = dict.Keys
 	arrItems = dict.Items
 	Call BubbleSort(arrKeys, arrItems)
@@ -76,7 +76,7 @@ Sub CheckZipfsLaw(filePath, intUserSpecifiedNum)
 		WScript.Echo arrKeys(i) & " " & arrItems(i) & " " & intTotalWords / (i + 1)
 	Next
 
-	WScript.Echo "\nThe most popular still remaining short forms in " & filePath & " are: \n"
+	WScript.Echo vbCrLf & "The most popular still remaining short forms in " & filePath & " are: " & vbCrLf
 	arrKeys = dictApostrophe.Keys
 	arrItems = dictApostrophe.Items
 	Call BubbleSort(arrKeys, arrItems)
